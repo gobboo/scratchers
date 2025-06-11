@@ -103,37 +103,24 @@ local function on_ticket_redemption_request()
 end
 
 local function on_ticket_stash_closed(player_id, inventory_id)
-	if not current_redeem_inventories[inventory_id] then return end
+  local contents = exports.ox_inventory:GetInventoryItems(inventory_id)
+  if not contents or not current_redeem_inventories[inventory_id] then return end
 
-	-- search the inventory, get all items that ARENT valid, and give them back
-	local invalid_items = {}
-	local to_redeem = {}
+  for _, item in pairs(contents) do
+		-- inline ifs, could get ugly but fair use
+    local is_valid_scratcher = item.name == "scratcher" and item.metadata and item.metadata.scratched
 
-	local contents = exports.ox_inventory:GetInventoryItems(inventory_id)
-
-	for slot, item in pairs(contents) do
-		if item.name ~= "scratcher" or not item.metadata.scratched then
-			invalid_items[slot] = item -- add the item to invalid items, store slot so we can be specific of the item to return
-		else
-			to_redeem[slot] = item
-		end
-	end
-
-	-- return the items to the player that are invalid
-	for _, item in pairs(invalid_items) do
-		exports.ox_inventory:AddItem(player_id, item, 1, item.metadata)
-	end
-
-	-- the rest of items left, we get the winnings and give cash
-	for _, item in pairs(to_redeem) do
-		local winning_tier = maths.evaluate_ticket(item.metadata.winners)
-		
-		if not winning_tier then return end
-
-		exports.ox_inventory:AddItem(player_id, 'money', winning_tier.reward)
-	end
-	
-	current_redeem_inventories[inventory_id] = nil
+    if is_valid_scratcher then
+      local winning_tier = maths.evaluate_ticket(item.metadata.winners)
+      
+			if winning_tier then
+        exports.ox_inventory:AddItem(player_id, 'money', winning_tier.reward)
+      end
+    else
+			-- give them their shit back, silly guys
+      exports.ox_inventory:AddItem(player_id, item, 1, item.metadata)
+    end
+  end
 end
 
 AddEventHandler('ox_inventory:closedInventory', on_ticket_stash_closed)
