@@ -132,6 +132,8 @@ local function on_ticket_stash_closed(player_id, inventory_id)
 
 		exports.ox_inventory:AddItem(player_id, 'money', winning_tier.reward)
 	end
+	
+	current_redeem_inventories[inventory_id] = nil
 end
 
 AddEventHandler('ox_inventory:closedInventory', on_ticket_stash_closed)
