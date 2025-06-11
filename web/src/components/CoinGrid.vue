@@ -78,7 +78,6 @@ const winningCluster = computed<WinningCluster | null>(() => {
   return null;
 });
 
-/** helper used in your template to highlight winners **/
 function isInWinningCluster(r: number, c: number): boolean {
   const wc = winningCluster.value;
 
@@ -92,15 +91,9 @@ function isInWinningCluster(r: number, c: number): boolean {
 
 <template>
   <div class="flex items-center justify-center w-full h-full px-4 2xl:px-6">
-    <!-- 
-      - aspect-[4/5] makes the grid container always be 4:5 (width:height),
-        so your cells will stay perfect no matter what the parent size is.
-      - grid-cols-4 + grid-rows-5 carves it into a 4×5 matrix.
-      - gap-2 gives you uniform spacing between every cell.
-      - place-items-center centers your coin SVGs.
-    -->
-    <div class="relative w-full aspect-[4/5] grid grid-cols-4 grid-rows-5 gap-1 place-items-center mt-1">
-      <!-- flatten into ROWS*COLS children -->
+    <div
+      class="relative w-full aspect-[4/5] grid grid-cols-4 grid-rows-5 gap-1 place-items-center mt-1"
+    >
       <template v-for="r in ROWS" :key="'r' + r">
         <template v-for="c in COLS" :key="`${r}-${c}`">
           <div
@@ -120,7 +113,6 @@ function isInWinningCluster(r: number, c: number): boolean {
 </template>
 
 <style scoped>
-/* optional base cell styling */
 div[cell] {
   display: flex;
   align-items: center;

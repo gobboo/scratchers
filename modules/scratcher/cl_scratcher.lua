@@ -9,12 +9,11 @@ local function display_scratcher(payload)
 	})
 end
 
--- define your scratch-off animation sequenc
 local function on_scratcher_closed(item, cb)
 	SetNuiFocus(false, false)
 
 	if (item.scratched) then
-		-- todo: tell server we scratched a ticket
+
 		TriggerServerEvent("scratchers:server:ScratchTicket", item.serial)
 	end
 
